@@ -9,9 +9,12 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users/config'
 import { Media } from './collections/Media'
+import { Customers } from './collections/Customers/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 export default buildConfig({
   admin: {
@@ -20,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Customers],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -36,4 +39,16 @@ export default buildConfig({
     payloadCloudPlugin(),
     // storage-adapter-placeholder
   ],
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.EMAIL_FROM || 'info@dev-test.com',
+    defaultFromName: process.env.NAME_FROM || 'Jane Doe',
+    transportOptions: {
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    },
+  }),
 })
