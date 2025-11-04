@@ -1,6 +1,6 @@
 import React from 'react'
 import CreateForm from './components/createForm'
-import { getUser } from '@/app/(auth)/actions/getUser'
+import { getUser } from '@/app/(frontend)/(private)/actions/getUser'
 import { redirect } from 'next/navigation'
 
 export default async function Page(): Promise<React.ReactElement> {
