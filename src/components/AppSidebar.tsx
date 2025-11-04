@@ -7,7 +7,6 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -24,7 +23,7 @@ import { usePathname } from 'next/navigation'
 const items = [
   {
     title: 'Inicio',
-    url: '',
+    url: 'dashboard',
     icon: Home,
   },
   {
@@ -54,7 +53,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/">
+              <Link href="/dashboard">
                 <Brain className="text-pink-500" />
                 <span>Therapy Link</span>
               </Link>
