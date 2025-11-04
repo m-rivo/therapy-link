@@ -1,9 +1,10 @@
 'use client'
-import { ForgotPassword } from '@/app/(account)/forgot-password/actions/forgotPassword'
+import { ForgotPassword } from '@/app/(frontend)/(account)/forgot-password/actions/forgotPassword'
 import React, { useState } from 'react'
-//import { Loader } from 'lucide-react'
+import { Loader } from 'lucide-react'
 import { logout } from '../actions/logout'
 import { redirect } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
 export const ResetPasswordButton = ({ email }: { email: string }) => {
   const [isClicked, setIsClicked] = useState(false)
@@ -20,17 +21,17 @@ export const ResetPasswordButton = ({ email }: { email: string }) => {
 
   return (
     <div>
-      <button
+      <Button
         disabled={isLoading || isClicked}
-        className={`${!isClicked ? 'cursor-pointer' : 'cursor-not-allowed'} mt-8 mb-4 w-auto px-4 py-2 rounded-md bg-emerald-50 text-emerald-950 border border-emerald-950 shadow-sm flex items-center justify-center gap-4`}
-        type={'button'}
+        className={`${!isClicked ? 'cursor-pointer' : 'cursor-not-allowed'} mt-8 mb-4`}
+        type="button"
         onClick={handleClick}
       >
         {isLoading ? 'Loading...' : isClicked ? 'Password reset requested!' : 'Reset Password'}
-        {/* <Loader className={`animate-spin ${isLoading ? 'inline-block' : 'hidden'}`} /> */}
-      </button>
+        <Loader className={`animate-spin ${isLoading ? 'inline-block' : 'hidden'}`} />
+      </Button>
       {isClicked && (
-        <div className={`text-emerald-950/50`}>
+        <div>
           <p>Check your email for more instructions.</p>
         </div>
       )}
