@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { User, Settings, LogOut } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { User } from 'lucide-react'
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,9 +7,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { ModeToggle } from "./ModeToggle";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from './ui/dropdown-menu'
+import { ModeToggle } from './ModeToggle'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { LogoutButton } from '@/app/(frontend)/(private)/components/LogoutButton'
 
 export default function Navbar() {
   return (
@@ -23,10 +23,7 @@ export default function Navbar() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
-              <AvatarImage
-                src="https://avatars.githubusercontent.com/u/1486366"
-                alt="logo"
-              />
+              <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" alt="logo" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
@@ -36,13 +33,10 @@ export default function Navbar() {
             <DropdownMenuItem>
               <User className="size-[1.2rem] mr-2" /> Perfil
             </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
-              <LogOut className="size-[1.2rem] mr-2" />
-              Logout
-            </DropdownMenuItem>
+            <LogoutButton />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </nav>
-  );
+  )
 }
