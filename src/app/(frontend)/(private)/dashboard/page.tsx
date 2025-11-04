@@ -13,8 +13,8 @@ export default async function Page() {
   return (
     <main className="w-full mx-auto sm:max-w-sm my-8">
       <div className="my-8">
-        <h1>Hello, {user.firstName || user.email}</h1>
-        <p>You are currently on the {user.tier?.toLowerCase() || 'free'} tier.</p>
+        <h1>Hola, {user.firstName || user.email}</h1>
+        <p>Actualmente estás en el plan {user.tier?.toLowerCase() || 'free'}.</p>
       </div>
       <UpdateForm user={user} tiers={tiers as TierProps[]} />
       <div className="flex justify-start items-center gap-4">

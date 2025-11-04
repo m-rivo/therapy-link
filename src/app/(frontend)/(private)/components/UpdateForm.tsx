@@ -3,10 +3,11 @@
 import React, { ReactElement, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
-import Input from '@/components/CustomerForm/Input'
 import { update, UpdateResponse } from '../actions/update'
 import type { Customer } from '@/payload-types'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
+import { Field, FieldLabel, FieldGroup, FieldSet } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 export default function UpdateForm({
   user,
@@ -26,9 +27,9 @@ export default function UpdateForm({
 
     const formData = new FormData(event.currentTarget)
 
-    const email = formData.get('email') as string
-    const firstName = formData.get('firstName') as string
-    const lastName = formData.get('lastName') as string
+    const email = formData.get('correo') as string
+    const firstName = formData.get('nombre') as string
+    const lastName = formData.get('apellido') as string
 
     const result: UpdateResponse = await update({ email, lastName, firstName })
 
@@ -42,24 +43,48 @@ export default function UpdateForm({
   }
 
   return (
-    <FormContainer heading="Your Account">
-      <form className={`flex flex-col gap-4`} onSubmit={handleSubmit}>
-        <div className="flex flex-row flex-1/2 gap-2">
-          <Input
-            label="First Name"
-            name="firstName"
-            type="text"
-            defaultValue={user.firstName || ''}
-          />
-          <Input label="Last Name" name="lastName" type="text" defaultValue={user.lastName || ''} />
-        </div>
-        <Input label="Email" name="email" type="email" defaultValue={user.email || ''} />
-        <fieldset className={`flex flex-wrap gap-4 justify-around items-center`}>
-          <legend>Your tier:</legend>
+    <FormContainer heading="Tu cuenta">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <FieldSet>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="nombre">Nombre</FieldLabel>
+              <Input
+                id="nombre"
+                name="nombre"
+                type="text"
+                required
+                defaultValue={user.firstName || ''}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="apellido">Apellido</FieldLabel>
+              <Input
+                id="apellido"
+                name="apellido"
+                type="text"
+                required
+                defaultValue={user.lastName || ''}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="correo">Correo</FieldLabel>
+              <Input
+                id="correo"
+                name="correo"
+                type="email"
+                required
+                defaultValue={user.email || ''}
+              />
+            </Field>
+          </FieldGroup>
+        </FieldSet>
+        <fieldset className="flex flex-wrap gap-4 justify-around items-center">
+          <legend>Tu plan:</legend>
           {tiers.map((tier, index) => (
-            <div className={`text-emerald-950/30`} key={index}>
+            <div key={index}>
               <input
-                className={`inert:opacity-60`}
+                className="inert:opacity-60"
                 inert
                 id={tier!}
                 readOnly
@@ -73,7 +98,7 @@ export default function UpdateForm({
           ))}
         </fieldset>
         {error && <div className="text-red-400">{error}</div>}
-        <SubmitButton loading={isLoading} text={`Update account`} />
+        <SubmitButton loading={isLoading} text="Actualizar cuenta" />
       </form>
     </FormContainer>
   )
