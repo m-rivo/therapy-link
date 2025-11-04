@@ -1,5 +1,5 @@
 import React from 'react'
-import { getUser } from '../../(auth)/actions/getUser'
+import { getUser } from '@/app/(frontend)/(private)/actions/getUser'
 import { redirect } from 'next/navigation'
 import ResetForm from './components/resetPasswordForm'
 
@@ -34,6 +34,6 @@ export default async function Page({
     )
   } else {
     // otherwise, we'll redirect to the login page
-    redirect(`/login?message=${encodeURIComponent('No reset token found')}`)
+    redirect(`/login?message=${encodeURIComponent('No se encontró ningún token')}`)
   }
 }

@@ -4,8 +4,9 @@ import React, { ReactElement, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { resetPassword, ResetPasswordResponse } from '../actions/resetPassword'
-import Input from '@/components/CustomerForm/Input'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
+import { Field, FieldLabel, FieldSet, FieldGroup } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 export default function ResetForm({ token }: { token: string }): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,11 +20,11 @@ export default function ResetForm({ token }: { token: string }): ReactElement {
 
     const formData = new FormData(event.currentTarget)
 
-    const password = formData.get('password') as string
-    const confirmPassword = formData.get('confirmPassword') as string
+    const password = formData.get('contrasena') as string
+    const confirmPassword = formData.get('confirm-contrasena') as string
 
     if (password !== confirmPassword) {
-      setError(`Passwords don't match`)
+      setError('Las contraseñas no conciden')
       setIsLoading(false)
       return
     }
@@ -34,7 +35,7 @@ export default function ResetForm({ token }: { token: string }): ReactElement {
 
     if (result.success) {
       router.push(
-        `/login?message=${encodeURIComponent('Password reset successful. Login with your new password.')}`,
+        `/login?message=${encodeURIComponent('Contraseña actualizada correctamente. Inicia sesión con tu nueva contraseña.')}`,
       )
     } else {
       setError(result.error || 'An error occurred.')
@@ -42,18 +43,23 @@ export default function ResetForm({ token }: { token: string }): ReactElement {
   }
 
   return (
-    <FormContainer heading={'Reset your password'}>
-      <div className={`w-full mx-auto sm:max-w-sm`}>
-        <form className={`flex flex-col gap-4`} onSubmit={handleSubmit}>
-          <Input label={'Password'} type={'password'} name={'password'} />
-          <Input
-            label={'Confirm Password'}
-            type={'password'}
-            name={'confirmPassword'}
-            placeholder={`Confirm your new password`}
-          />
-          {error && <div className={`text-red-400`}>{error}</div>}
-          <SubmitButton loading={isLoading} text={`Reset password`} />
+    <FormContainer heading="Cambia tu contraseña">
+      <div className="w-full mx-auto sm:max-w-sm">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <FieldSet>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="contrasena">Contraseña</FieldLabel>
+                <Input id="contrasena" name="contrasena" type="password" required />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="confirm-contrasena">Confirma Contraseña</FieldLabel>
+                <Input id="confirm-contrasena" name="confirm-contrasena" type="password" required />
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+          {error && <div className="text-red-400">{error}</div>}
+          <SubmitButton loading={isLoading} text="Cambiar contraseña" />
         </form>
       </div>
     </FormContainer>

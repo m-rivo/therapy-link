@@ -3,9 +3,10 @@
 import React, { ReactElement, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
-import Input from '@/components/CustomerForm/Input'
 import { ForgotPassword, ForgotPasswordResponse } from '../actions/forgotPassword'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
+import { Field, FieldGroup, FieldSet, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 export default function ForgotForm(): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +20,7 @@ export default function ForgotForm(): ReactElement {
 
     const formData = new FormData(event.currentTarget)
 
-    const email = formData.get('email') as string
+    const email = formData.get('correo') as string
 
     setIsLoading(false)
 
@@ -27,7 +28,7 @@ export default function ForgotForm(): ReactElement {
 
     if (result.success) {
       router.push(
-        `/login?message=${encodeURIComponent('Instructions to reset your password have been emailed to you.')}`,
+        `/login?message=${encodeURIComponent('Las instrucciones para reestablecer tu contraseña han sido enviadas a tu correo.')}`,
       )
     } else {
       setError(result.error || 'An error occurred.')
@@ -35,12 +36,19 @@ export default function ForgotForm(): ReactElement {
   }
 
   return (
-    <FormContainer heading={'Forgot Password?'}>
-      <div className={`w-full mx-auto sm:max-w-sm`}>
-        <form className={`flex flex-col gap-4`} onSubmit={handleSubmit}>
-          <Input label={'Email'} name={'email'} type={'email'} />
-          {error && <div className={`text-red-400`}>{error}</div>}
-          <SubmitButton loading={isLoading} text={`Reset password`} />
+    <FormContainer heading="¿Olvidaste tu contraseña?">
+      <div className="w-full mx-auto sm:max-w-sm">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <FieldSet>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="correo">Correo</FieldLabel>
+                <Input id="correo" name="correo" type="email" required />
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+          {error && <div className="text-red-400">{error}</div>}
+          <SubmitButton loading={isLoading} text="Reestablecer contraseña" />
         </form>
       </div>
     </FormContainer>

@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { create, CreateResponse } from '../actions/create'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
-//import Input from '@/components/CustomerForm/Input'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { Field, FieldSet, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -30,7 +29,6 @@ export default function CreateForm(): ReactElement {
     const confirmPassword = formData.get('confirm-contrasena') as string
     const firstName = formData.get('nombre') as string
     const lastName = formData.get('apellido') as string
-    //const username = formData.get('usuario') as string
 
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden')
@@ -38,25 +36,19 @@ export default function CreateForm(): ReactElement {
       return
     }
 
-    console.log({
-      email,
-      password,
-      lastName,
-      firstName,
-    })
-
     const result: CreateResponse = await create({
       email,
       password,
       lastName,
       firstName,
-      //username
     })
 
     setIsLoading(false)
 
     if (result.success) {
-      router.push(`/login?message=${encodeURIComponent('Check your email to verify your account')}`)
+      router.push(
+        `/login?message=${encodeURIComponent('Las instrucciones para confirmar tu cuenta han sido enviadas a tu correo.')}`,
+      )
     } else {
       setError(result.error || 'An error occurred.')
     }
@@ -94,7 +86,7 @@ export default function CreateForm(): ReactElement {
       </form>
       <div className="mt-4">
         <p className="text-sm">
-          Ya tienes una cuenta?{' '}
+          ¿Ya tienes una cuenta?{' '}
           <Link className="underline underline-offset-4" href="/login">
             Inicia sesión aquí
           </Link>

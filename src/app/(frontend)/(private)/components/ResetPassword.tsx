@@ -1,4 +1,5 @@
 'use client'
+
 import { ForgotPassword } from '@/app/(frontend)/(account)/forgot-password/actions/forgotPassword'
 import React, { useState } from 'react'
 import { Loader } from 'lucide-react'
@@ -16,7 +17,7 @@ export const ResetPasswordButton = ({ email }: { email: string }) => {
     setIsLoading(false)
     setIsClicked(true)
     await logout()
-    redirect(`/login?message=${encodeURIComponent('Password reset request sent to your email.')}`)
+    redirect(`/login?message=${encodeURIComponent('Cambio de contraseña solicitado.')}`)
   }
 
   return (
@@ -27,12 +28,16 @@ export const ResetPasswordButton = ({ email }: { email: string }) => {
         type="button"
         onClick={handleClick}
       >
-        {isLoading ? 'Loading...' : isClicked ? 'Password reset requested!' : 'Reset Password'}
+        {isLoading
+          ? 'Loading...'
+          : isClicked
+            ? 'Cambio de contraseña solicitado!'
+            : 'Cambiar contraseña'}
         <Loader className={`animate-spin ${isLoading ? 'inline-block' : 'hidden'}`} />
       </Button>
       {isClicked && (
         <div>
-          <p>Check your email for more instructions.</p>
+          <p>Revisa tu correo para más instrucciones.</p>
         </div>
       )}
     </div>
