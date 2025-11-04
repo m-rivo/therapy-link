@@ -1,5 +1,6 @@
 import React from 'react'
-//import { Loader } from 'lucide-react'
+import { Loader } from 'lucide-react'
+import { Button } from '../ui/button'
 
 export default function SubmitButton({
   loading,
@@ -9,12 +10,13 @@ export default function SubmitButton({
   text: string
 }): React.ReactElement {
   return (
-    <button
-      type={'submit'}
-      className={`${loading ? 'cursor-not-allowed' : 'cursor-pointer'} bg-emerald-950 text-emerald-50 p-2 w-full rounded-md flex items-center gap-4 justify-center`}
+    <Button
+      type="submit"
+      className={loading ? 'cursor-not-allowed' : 'cursor-pointer'}
       disabled={loading}
     >
-      {text} {/* <Loader className={`animate-spin ${loading ? 'inline-block' : 'hidden'}`} /> */}
-    </button>
+      {text}
+      <Loader className={`animate-spin ${loading ? 'inline-block' : 'hidden'}`} />
+    </Button>
   )
 }
