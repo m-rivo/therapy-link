@@ -1,5 +1,5 @@
 import React from 'react'
-import { Loader } from 'lucide-react'
+import { LoaderCircle } from 'lucide-react'
 import { Button } from '../ui/button'
 
 export default function SubmitButton({
@@ -16,7 +16,7 @@ export default function SubmitButton({
       disabled={loading}
     >
       {text}
-      <Loader className={`animate-spin ${loading ? 'inline-block' : 'hidden'}`} />
+      <LoaderCircle className={`animate-spin ${loading ? 'inline-block' : 'hidden'}`} />
     </Button>
   )
 }

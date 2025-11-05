@@ -8,11 +8,11 @@ export const FormContainer = ({
   heading: string
 }) => {
   return (
-    <div className={`flex gap-8 min-h-full flex-col justify-center items-center`}>
+    <div className="flex gap-8 min-h-full flex-col justify-center items-center">
       <div>
         <h1>{heading}</h1>
       </div>
-      <div className={`w-full mx-auto sm:max-w-sm`}>{children}</div>
+      <div className="w-full mx-auto sm:max-w-sm">{children}</div>
     </div>
   )
 }

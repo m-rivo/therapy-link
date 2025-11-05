@@ -12,7 +12,7 @@ export const Page = async ({ searchParams }: { searchParams: SearchParams }) => 
   const payload = await getPayload({ config })
 
   if (!token) {
-    redirect(`/login?message=${encodeURIComponent('No verification token found')}`)
+    redirect(`/login?message=${encodeURIComponent('No se encontró ningún token de verificación')}`)
   } else {
     const result = await payload.verifyEmail({
       collection: 'customers',
@@ -20,7 +20,9 @@ export const Page = async ({ searchParams }: { searchParams: SearchParams }) => 
     })
 
     if (result) {
-      redirect(`/login?message=${encodeURIComponent('Successfully verified. Please login')}`)
+      redirect(
+        `/login?message=${encodeURIComponent('Verificado exitosamente. Porfavor inicia sesión.')}`,
+      )
     } else {
       return (
         <div className="flex flex-col items-center justify-center min-h-full h-[calc(100vh)] w-full mx-auto sm:max-w-sm">
