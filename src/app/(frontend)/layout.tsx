@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata: Metadata = {
   title: 'Therapy Link',
@@ -22,6 +23,12 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster
+            position="top-center"
+            richColors
+            expand
+            swipeDirections={['top', 'right', 'bottom', 'left']}
+          />
         </ThemeProvider>
       </body>
     </html>

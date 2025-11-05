@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { create, CreateResponse } from '../actions/create'
@@ -8,6 +8,7 @@ import { FormContainer } from '@/components/CustomerForm/FormContainer'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { Field, FieldSet, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
 export default function CreateForm(): ReactElement {
   // create loading states using the useState hook. The default should be false.
@@ -54,6 +55,10 @@ export default function CreateForm(): ReactElement {
     }
   }
 
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
   return (
     <FormContainer heading="Crea una cuenta">
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -81,7 +86,6 @@ export default function CreateForm(): ReactElement {
             </Field>
           </FieldGroup>
         </FieldSet>
-        {error && <div className="text-red-400">{error}</div>}
         <SubmitButton loading={isLoading} text="Crear cuenta" />
       </form>
       <div className="mt-4">

@@ -2,6 +2,7 @@ import React from 'react'
 import LoginForm from './components/loginForm'
 import { getUser } from '@/app/(frontend)/(private)/actions/getUser'
 import { redirect } from 'next/navigation'
+import MessageToast from './components/MessageToast'
 
 interface SearchParams {
   [key: string]: string | undefined
@@ -21,13 +22,7 @@ export default async function Page({
 
   return (
     <div className="h-screen w-full mx-auto sm:max-w-sm">
-      {message && (
-        <div className="flex justify-center mt-8">
-          <p className="w-auto inline-block mx-auto p-4 bg-emerald-100 text-emerald-950 border-emerald-950 rounded-md">
-            {message}
-          </p>
-        </div>
-      )}
+      <MessageToast message={message} />
       <LoginForm />
     </div>
   )

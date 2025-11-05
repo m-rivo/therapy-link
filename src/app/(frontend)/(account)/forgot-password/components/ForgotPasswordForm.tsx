@@ -1,12 +1,13 @@
 'use client'
 
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { ForgotPassword, ForgotPasswordResponse } from '../actions/forgotPassword'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
 import { Field, FieldGroup, FieldSet, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
 export default function ForgotForm(): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
@@ -35,6 +36,10 @@ export default function ForgotForm(): ReactElement {
     }
   }
 
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
   return (
     <FormContainer heading="¿Olvidaste tu contraseña?">
       <div className="w-full mx-auto sm:max-w-sm">
@@ -47,7 +52,6 @@ export default function ForgotForm(): ReactElement {
               </Field>
             </FieldGroup>
           </FieldSet>
-          {error && <div className="text-red-400">{error}</div>}
           <SubmitButton loading={isLoading} text="Reestablecer contraseña" />
         </form>
       </div>

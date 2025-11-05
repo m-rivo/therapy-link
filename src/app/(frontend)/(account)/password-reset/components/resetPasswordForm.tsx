@@ -1,12 +1,13 @@
 'use client'
 
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { resetPassword, ResetPasswordResponse } from '../actions/resetPassword'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
 import { Field, FieldLabel, FieldSet, FieldGroup } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
 export default function ResetForm({ token }: { token: string }): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
@@ -42,6 +43,10 @@ export default function ResetForm({ token }: { token: string }): ReactElement {
     }
   }
 
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
   return (
     <FormContainer heading="Cambia tu contraseña">
       <div className="w-full mx-auto sm:max-w-sm">
@@ -58,7 +63,6 @@ export default function ResetForm({ token }: { token: string }): ReactElement {
               </Field>
             </FieldGroup>
           </FieldSet>
-          {error && <div className="text-red-400">{error}</div>}
           <SubmitButton loading={isLoading} text="Cambiar contraseña" />
         </form>
       </div>

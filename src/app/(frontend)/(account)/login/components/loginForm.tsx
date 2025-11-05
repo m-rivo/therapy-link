@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { login, LoginResponse } from '../../login/actions/login'
@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { FormContainer } from '@/components/CustomerForm/FormContainer'
 import { Field, FieldLabel, FieldGroup, FieldSet } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
 export default function LoginForm(): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
@@ -34,6 +35,10 @@ export default function LoginForm(): ReactElement {
     }
   }
 
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
   return (
     <FormContainer heading="Inicia sesión">
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -53,7 +58,6 @@ export default function LoginForm(): ReactElement {
             </Field>
           </FieldGroup>
         </FieldSet>
-        {error && <div className="text-red-400">{error}</div>}
         <SubmitButton loading={isLoading} text="Login" />
       </form>
       <div className="mt-4">
