@@ -7,11 +7,6 @@
  */
 
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tierProps".
- */
-export type TierProps = ('Free' | 'Basic' | 'Pro' | 'Enterprise') | null;
-/**
  * Supported timezones in IANA format.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -194,7 +189,6 @@ export interface Customer {
   id: number;
   firstName?: string | null;
   lastName?: string | null;
-  tier?: TierProps;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -333,7 +327,6 @@ export interface MediaSelect<T extends boolean = true> {
 export interface CustomersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
-  tier?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
