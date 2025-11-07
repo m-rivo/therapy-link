@@ -49,5 +49,19 @@ export const Customers: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'phoneNumber',
+      type: 'text',
+    },
+    {
+      name: 'birthDate',
+      type: 'date',
+    },
+    {
+      name: 'profileImage',
+      label: 'Imagen de Perfil',
+      type: 'upload',
+      relationTo: 'media',
+    },
   ],
 }

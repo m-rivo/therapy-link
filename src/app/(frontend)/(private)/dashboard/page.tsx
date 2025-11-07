@@ -1,7 +1,6 @@
 import { getUser } from '../actions/getUser'
 import { Customer } from '@/payload-types'
 import { ResetPasswordButton } from '../components/ResetPassword'
-import UpdateForm from '../components/UpdateForm'
 
 export default async function Page() {
   const user = (await getUser()) as Customer
@@ -11,7 +10,6 @@ export default async function Page() {
       <div className="my-8">
         <h1>Hola, {user.firstName || user.email}</h1>
       </div>
-      <UpdateForm user={user} />
       <div className="flex justify-start items-center gap-4">
         <ResetPasswordButton email={user.email} />
       </div>

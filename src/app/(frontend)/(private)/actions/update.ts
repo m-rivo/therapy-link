@@ -8,7 +8,9 @@ import type { Customer } from '@/payload-types'
 interface UpdateParams {
   email: string
   firstName: string
-  lastName?: string
+  lastName: string
+  birthDate?: string
+  phoneNumber?: string
 }
 
 export interface UpdateResponse {
@@ -20,6 +22,8 @@ export async function update({
   email,
   firstName,
   lastName,
+  phoneNumber,
+  birthDate,
 }: UpdateParams): Promise<UpdateResponse> {
   const payload = await getPayload({ config })
   const user = (await getUser()) as Customer
@@ -29,10 +33,10 @@ export async function update({
     await payload.update({
       collection: 'customers',
       id: user.id,
-      data: { email, firstName, lastName },
+      data: { email, firstName, lastName, phoneNumber, birthDate },
     })
   } catch (e) {
-    console.log('Update error: ', e)
+    console.log('Error de actualización: ', e)
     return { success: false, error: 'An error occurred' }
   }
   return { success: true }

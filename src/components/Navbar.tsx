@@ -11,6 +11,7 @@ import {
 import { ModeToggle } from './ModeToggle'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { LogoutButton } from '@/app/(frontend)/(private)/components/LogoutButton'
+import Link from 'next/link'
 
 export default function Navbar() {
   return (
@@ -31,7 +32,7 @@ export default function Navbar() {
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <User className="size-[1.2rem] mr-2" /> Perfil
+              <User className="size-[1.2rem] mr-2" /> <Link href="/user-profile">Mi Perfil</Link>
             </DropdownMenuItem>
             <LogoutButton />
           </DropdownMenuContent>

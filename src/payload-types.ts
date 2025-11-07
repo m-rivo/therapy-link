@@ -189,6 +189,9 @@ export interface Customer {
   id: number;
   firstName?: string | null;
   lastName?: string | null;
+  phoneNumber?: string | null;
+  birthDate?: string | null;
+  profileImage?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -327,6 +330,9 @@ export interface MediaSelect<T extends boolean = true> {
 export interface CustomersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
+  phoneNumber?: T;
+  birthDate?: T;
+  profileImage?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

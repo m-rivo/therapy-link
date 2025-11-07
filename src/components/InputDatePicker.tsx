@@ -1,50 +1,48 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { CalendarIcon } from "lucide-react";
+import * as React from 'react'
+import { CalendarIcon } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 function formatDate(date: Date | undefined) {
   if (!date) {
-    return "";
+    return ''
   }
 
-  return date.toLocaleDateString("es-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+  return date.toLocaleDateString('es-US', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
 }
 
 function isValidDate(date: Date | undefined) {
   if (!date) {
-    return false;
+    return false
   }
-  return !isNaN(date.getTime());
+  return !isNaN(date.getTime())
 }
 
 export default function InputDatePicker({
   id,
   label,
+  defaultDate,
+  disabled,
 }: {
-  id: string;
-  label: string;
+  id: string
+  label: string
+  defaultDate: Date
+  disabled: boolean
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
-  );
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
+  const [open, setOpen] = React.useState(false)
+  const [date, setDate] = React.useState<Date | undefined>(new Date(defaultDate || new Date()))
+  const [month, setMonth] = React.useState<Date | undefined>(date)
+  const [value, setValue] = React.useState(formatDate(date))
 
   return (
     <div className="flex flex-col gap-3">
@@ -54,21 +52,22 @@ export default function InputDatePicker({
       <div className="relative flex gap-2">
         <Input
           id={id}
+          name={id}
           value={value}
-          placeholder="June 01, 2025"
+          disabled={disabled}
           className="bg-background pr-10"
           onChange={(e) => {
-            const date = new Date(e.target.value);
-            setValue(e.target.value);
+            const date = new Date(e.target.value)
+            setValue(e.target.value)
             if (isValidDate(date)) {
-              setDate(date);
-              setMonth(date);
+              setDate(date)
+              setMonth(date)
             }
           }}
           onKeyDown={(e) => {
-            if (e.key === "ArrowDown") {
-              e.preventDefault();
-              setOpen(true);
+            if (e.key === 'ArrowDown') {
+              e.preventDefault()
+              setOpen(true)
             }
           }}
         />
@@ -78,6 +77,7 @@ export default function InputDatePicker({
               id="date-picker"
               variant="ghost"
               className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+              disabled={disabled}
             >
               <CalendarIcon className="size-3.5" />
               <span className="sr-only">Seleccione Fecha</span>
@@ -96,14 +96,14 @@ export default function InputDatePicker({
               month={month}
               onMonthChange={setMonth}
               onSelect={(date) => {
-                setDate(date);
-                setValue(formatDate(date));
-                setOpen(false);
+                setDate(date)
+                setValue(formatDate(date))
+                setOpen(false)
               }}
             />
           </PopoverContent>
         </Popover>
       </div>
     </div>
-  );
+  )
 }
