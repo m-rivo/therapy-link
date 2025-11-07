@@ -7,11 +7,11 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import { cookies } from 'next/headers'
 
 const Template: React.FC<{ children: ReactNode }> = async ({ children }) => {
-  const user = await getUser()
+  /*   const user = await getUser()
   if (!user) {
     // if there's no user, we can redirect the browser back to the login route
     redirect('/login')
-  }
+  } */
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true'
 

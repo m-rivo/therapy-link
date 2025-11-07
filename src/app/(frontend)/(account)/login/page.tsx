@@ -13,10 +13,10 @@ export default async function Page({
 }: {
   searchParams: SearchParams
 }): Promise<React.ReactElement> {
-  const user = await getUser()
+  /*   const user = await getUser()
   if (user) {
     redirect('/dashboard')
-  }
+  } */
 
   const { message } = await searchParams
 
