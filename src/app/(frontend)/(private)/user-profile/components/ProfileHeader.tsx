@@ -1,10 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Cake, Mail, Phone } from 'lucide-react'
-import { User } from 'lucide-react'
+import { Cake, Mail, Phone, User } from 'lucide-react'
 import { Customer } from '@/payload-types'
 import EditButton from './EditButton'
 import ChangeImageButton from './ChangeImageButton'
+import { Media } from '@/payload-types'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function ProfileHeader({ user }: { user: Customer }) {
   function getBirthDate(userBirthDate: string) {
@@ -23,7 +23,7 @@ export default function ProfileHeader({ user }: { user: Customer }) {
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
           <div className="relative">
             <Avatar className="h-24 w-24">
-              <AvatarImage src="https://bundui-images.netlify.app/avatars/08.png" alt="Profile" />
+              <AvatarImage src={(user?.profileImage as Media)?.url || undefined} alt="Profile" />
               <AvatarFallback>
                 <User size={40} />
               </AvatarFallback>
@@ -33,7 +33,7 @@ export default function ProfileHeader({ user }: { user: Customer }) {
           <div className="flex-1 space-y-2">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <h1 className="text-2xl font-bold">
-                {user.firstName} {user.lastName}
+                {user?.firstName} {user?.lastName}
               </h1>
             </div>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">

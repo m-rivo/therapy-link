@@ -1,14 +1,47 @@
-import { Button } from '@/components/ui/button'
+'use client'
+
 import { Camera } from 'lucide-react'
+import { Dropzone } from './Dropzone'
+import { useState } from 'react'
+
+import { updateProfileImageAction } from '../actions/updateProfileImage'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 export default function ChangeImageButton() {
+  const [files, setFiles] = useState<File[] | undefined>()
+
+  const router = useRouter()
+
+  const handleDrop = async (files: File[]) => {
+    if (files.length === 0) return
+
+    const file = files[0]
+    setFiles(files)
+
+    const formData = new FormData()
+
+    formData.append('file', file)
+
+    const result = await updateProfileImageAction(formData)
+
+    if (result.success) {
+      toast.success(result.message || 'Actualización exitosa.')
+
+      router.refresh()
+    } else {
+      toast.error(result.message || 'Fallo desconocido.')
+    }
+  }
+
   return (
-    <Button
-      size="icon"
-      variant="outline"
-      className="absolute -right-2 -bottom-2 h-8 w-8 rounded-full"
+    <Dropzone
+      accept={{ 'image/*': ['.png', '.jpg', '.jpeg'] }}
+      onDrop={handleDrop}
+      onError={console.error}
+      src={files}
     >
       <Camera />
-    </Button>
+    </Dropzone>
   )
 }

@@ -12,11 +12,16 @@ import SubmitButton from '@/components/CustomerForm/SubmitButton'
 import { Button } from '@/components/ui/button'
 import { parse, isValid } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useRouter } from 'next/navigation'
 
+//TODO: validaciones, no empty
+//FIXME: se puede cambiar el correo?
 export default function ProfileContent({ user }: { user: Customer }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+
+  const router = useRouter()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
@@ -48,8 +53,8 @@ export default function ProfileContent({ user }: { user: Customer }) {
     })
 
     if (result.success) {
-      //router.push('/user-profile')
       toast.success('Guardado con éxito')
+      router.refresh()
     } else {
       toast.error(error)
     }
