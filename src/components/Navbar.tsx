@@ -12,8 +12,12 @@ import { ModeToggle } from './ModeToggle'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { LogoutButton } from '@/app/(frontend)/(private)/components/LogoutButton'
 import Link from 'next/link'
+import { getUser } from '@/app/(frontend)/(private)/actions/getUser'
+import { Media } from '@/payload-types'
 
-export default function Navbar() {
+export default async function Navbar() {
+  const user = await getUser()
+
   return (
     <nav className="p-4 flex items-center justify-between">
       {/* LEFT */}
@@ -24,8 +28,13 @@ export default function Navbar() {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
-              <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" alt="logo" />
-              <AvatarFallback>CN</AvatarFallback>
+              {(user?.profileImage as Media)?.url && (
+                <AvatarImage src={(user?.profileImage as Media)?.url || undefined} alt="logo" />
+              )}
+              <AvatarFallback>
+                {user?.firstName?.charAt(0).toUpperCase()}
+                {user?.lastName?.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent sideOffset={10}>
