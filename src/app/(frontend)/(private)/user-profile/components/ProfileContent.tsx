@@ -13,13 +13,21 @@ import { Button } from '@/components/ui/button'
 import { parse, isValid } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
+import { Dispatch, SetStateAction } from 'react'
 
-//TODO: validaciones, no empty
+///TODO: validaciones, no empty
 //FIXME: se puede cambiar el correo?
-export default function ProfileContent({ user }: { user: Customer }) {
+export default function ProfileContent({
+  user,
+  isEditing,
+  setIsEditing,
+}: {
+  user: Customer
+  isEditing: boolean
+  setIsEditing: Dispatch<SetStateAction<boolean>>
+}) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
 
   const router = useRouter()
 
@@ -126,15 +134,13 @@ export default function ProfileContent({ user }: { user: Customer }) {
                 </div>
               )}
               <div className="flex justify-end items-end">
-                {isEditing ? (
+                {isEditing && (
                   <>
                     <SubmitButton loading={isLoading} text="Guardar" />
                     <Button onClick={() => setIsEditing(false)} variant="secondary">
                       Cancelar
                     </Button>
                   </>
-                ) : (
-                  <Button onClick={() => setIsEditing(true)}>Editar</Button>
                 )}
               </div>
             </form>

@@ -1,12 +1,22 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Cake, Mail, Phone, User } from 'lucide-react'
 import { Customer } from '@/payload-types'
-import EditButton from './EditButton'
 import ChangeImageButton from './ChangeImageButton'
 import { Media } from '@/payload-types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Edit } from 'lucide-react'
+import { Dispatch, SetStateAction } from 'react'
 
-export default function ProfileHeader({ user }: { user: Customer }) {
+export default function ProfileHeader({
+  user,
+  isEditing,
+  setIsEditing,
+}: {
+  user: Customer
+  isEditing: boolean
+  setIsEditing: Dispatch<SetStateAction<boolean>>
+}) {
   function getBirthDate(userBirthDate: string) {
     const birthDate = new Date(userBirthDate)
 
@@ -51,7 +61,11 @@ export default function ProfileHeader({ user }: { user: Customer }) {
               </div>
             </div>
           </div>
-          <EditButton />
+          {!isEditing && (
+            <Button variant="default" onClick={() => setIsEditing(true)}>
+              <Edit /> Editar Perfil
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
