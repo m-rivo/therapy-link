@@ -21,20 +21,17 @@ function formatDate(date: Date | undefined) {
   })
 }
 
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false
-  }
-  return !isNaN(date.getTime())
-}
-
 export default function InputDatePicker({
+  value,
+  onChange,
   id,
   label,
   defaultDate,
   disabled,
 }: {
-  id: string
+  value: any
+  onChange: any
+  id: any
   label: string
   defaultDate: Date
   disabled: boolean
@@ -42,7 +39,6 @@ export default function InputDatePicker({
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(new Date(defaultDate || new Date()))
   const [month, setMonth] = React.useState<Date | undefined>(date)
-  const [value, setValue] = React.useState(formatDate(date))
 
   return (
     <div className="flex flex-col gap-3">
@@ -56,14 +52,7 @@ export default function InputDatePicker({
           value={value}
           disabled={disabled}
           className="bg-background pr-10"
-          onChange={(e) => {
-            const date = new Date(e.target.value)
-            setValue(e.target.value)
-            if (isValidDate(date)) {
-              setDate(date)
-              setMonth(date)
-            }
-          }}
+          onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown') {
               e.preventDefault()
@@ -95,9 +84,9 @@ export default function InputDatePicker({
               captionLayout="dropdown"
               month={month}
               onMonthChange={setMonth}
-              onSelect={(date) => {
-                setDate(date)
-                setValue(formatDate(date))
+              onSelect={(d) => {
+                setDate(d)
+                onChange(formatDate(d))
                 setOpen(false)
               }}
             />

@@ -6,7 +6,7 @@ import { getUser } from './getUser'
 import type { Customer } from '@/payload-types'
 
 interface UpdateParams {
-  email: string
+  //email: string
   firstName: string
   lastName: string
   birthDate?: string
@@ -19,7 +19,7 @@ export interface UpdateResponse {
 }
 
 export async function update({
-  email,
+  //email,
   firstName,
   lastName,
   phoneNumber,
@@ -33,7 +33,7 @@ export async function update({
     await payload.update({
       collection: 'customers',
       id: user.id,
-      data: { email, firstName, lastName, phoneNumber, birthDate },
+      data: { /* email, */ firstName, lastName, phoneNumber, birthDate },
     })
   } catch (e) {
     console.log('Error de actualización: ', e)

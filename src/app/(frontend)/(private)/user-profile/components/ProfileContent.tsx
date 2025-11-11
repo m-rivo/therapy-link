@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import InputDatePicker from '@/components/InputDatePicker'
 import { Customer } from '@/payload-types'
-import { useState } from 'react'
 import { update, UpdateResponse } from '../../actions/update'
 import { toast } from 'sonner'
 import SubmitButton from '@/components/CustomerForm/SubmitButton'
@@ -14,9 +13,12 @@ import { parse, isValid } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
 import { Dispatch, SetStateAction } from 'react'
+import { TProfileSchema, profileSchema } from '@/lib/types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from '@/components/ui/field'
 
-///TODO: validaciones, no empty
-//FIXME: se puede cambiar el correo?
 export default function ProfileContent({
   user,
   isEditing,
@@ -26,25 +28,32 @@ export default function ProfileContent({
   isEditing: boolean
   setIsEditing: Dispatch<SetStateAction<boolean>>
 }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
   const router = useRouter()
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault()
-    setIsLoading(true)
-    setError(null)
+  function formatDate(date: Date | undefined) {
+    if (!date) {
+      return ''
+    }
 
-    const formData = new FormData(event.currentTarget)
+    return date.toLocaleDateString('es-US', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    })
+  }
 
-    const email = formData.get('email') as string
-    const firstName = formData.get('firstName') as string
-    const lastName = formData.get('lastName') as string
-    const phoneNumber = formData.get('phoneNumber') as string
-    const birthDateString = formData.get('birthDate') as string
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TProfileSchema>({
+    resolver: zodResolver(profileSchema),
+  })
 
-    const parsedDate = parse(birthDateString, "dd 'de' MMMM 'de' yyyy", new Date(), { locale: es })
+  const onSubmit = async (data: TProfileSchema) => {
+    const parsedDate = parse(data.birthDate, "dd 'de' MMMM 'de' yyyy", new Date(), { locale: es })
 
     let birthDateISO: string | undefined
 
@@ -53,10 +62,7 @@ export default function ProfileContent({
     }
 
     const result: UpdateResponse = await update({
-      email,
-      lastName,
-      firstName,
-      phoneNumber,
+      ...data,
       birthDate: birthDateISO,
     })
 
@@ -64,10 +70,9 @@ export default function ProfileContent({
       toast.success('Guardado con éxito')
       router.refresh()
     } else {
-      toast.error(error)
+      toast.error('Error')
     }
 
-    setIsLoading(false)
     setIsEditing(false)
   }
 
@@ -80,64 +85,95 @@ export default function ProfileContent({
             <CardTitle>Información Personal</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form className="grid grid-cols-1 gap-6 md:grid-cols-2" onSubmit={handleSubmit}>
-              <div className="space-y-2">
-                <Label htmlFor="firstName">Nombre</Label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  defaultValue={user.firstName || ''}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Apellido</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  defaultValue={user.lastName || ''}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Correo Electrónico</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  name="email"
-                  defaultValue={user.email || ''}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Número de Teléfono</Label>
-                <Input
-                  id="phone"
-                  name="phoneNumber"
-                  defaultValue={user.phoneNumber || ''}
-                  disabled={!isEditing}
-                />
-              </div>
-              {user.birthDate || isEditing ? (
-                <div className="space-y-2">
-                  <InputDatePicker
-                    id="birthDate"
-                    label="Fecha de Nacimiento"
-                    defaultDate={new Date(user.birthDate || new Date())}
-                    disabled={!isEditing}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="birthDate">Fecha de Nacimiento</Label>
-                  <Input id="birthDate" defaultValue="" disabled={!isEditing} />
-                </div>
-              )}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <FieldSet>
+                <FieldGroup className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <Field>
+                    <FieldLabel htmlFor="firstName">Nombre *</FieldLabel>
+                    <Input
+                      {...register('firstName')}
+                      id="firstName"
+                      type="firstName"
+                      name="firstName"
+                      defaultValue={user.firstName || ''}
+                      disabled={!isEditing}
+                    />
+                    <FieldError errors={[{ message: errors.firstName?.message }]} />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="lastName">Apellido *</FieldLabel>
+                    <Input
+                      {...register('lastName')}
+                      id="lastName"
+                      type="lastName"
+                      name="lastName"
+                      defaultValue={user.lastName || ''}
+                      disabled={!isEditing}
+                    />
+                    <FieldError errors={[{ message: errors.lastName?.message }]} />
+                  </Field>
+                  {/* <Field>
+                    <FieldLabel htmlFor="email">Correo Electrónico *</FieldLabel>
+                    <Input
+                      {...register('email')}
+                      id="email"
+                      type="email"
+                      name="email"
+                      defaultValue={user.email || ''}
+                      disabled={!isEditing}
+                    />
+                    <FieldError errors={[{ message: errors.email?.message }]} />
+                  </Field> */}
+                  <Field>
+                    <FieldLabel htmlFor="phoneNumber">Número de Teléfono</FieldLabel>
+                    <Input
+                      {...register('phoneNumber')}
+                      id="phoneNumber"
+                      type="phoneNumber"
+                      name="phoneNumber"
+                      defaultValue={user.phoneNumber || ''}
+                      disabled={!isEditing}
+                    />
+                    <FieldError errors={[{ message: errors.phoneNumber?.message }]} />
+                  </Field>
+                  {user.birthDate || isEditing ? (
+                    <div className="space-y-2">
+                      <Controller
+                        name="birthDate"
+                        control={control}
+                        defaultValue={formatDate(new Date(user.birthDate || new Date()))}
+                        render={({ field }) => (
+                          <InputDatePicker
+                            id="birthDate"
+                            value={field.value}
+                            onChange={field.onChange}
+                            label="Fecha de Nacimiento"
+                            disabled={!isEditing}
+                            defaultDate={new Date(user.birthDate || new Date())}
+                          />
+                        )}
+                      />
+                      <FieldError errors={[{ message: errors.birthDate?.message }]} />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="birthDate">Fecha de Nacimiento</Label>
+                      <Input id="birthDate" defaultValue="" disabled={!isEditing} />
+                    </div>
+                  )}
+                </FieldGroup>
+              </FieldSet>
               <div className="flex justify-end items-end">
                 {isEditing && (
                   <>
-                    <SubmitButton loading={isLoading} text="Guardar" />
-                    <Button onClick={() => setIsEditing(false)} variant="secondary">
+                    <SubmitButton loading={isSubmitting} text="Guardar" />
+                    <Button
+                      onClick={() => {
+                        reset()
+                        setIsEditing(false)
+                      }}
+                      variant="secondary"
+                    >
                       Cancelar
                     </Button>
                   </>
