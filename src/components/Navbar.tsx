@@ -1,19 +1,11 @@
-import { User } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { ModeToggle } from './ModeToggle'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { LogoutButton } from '@/app/(frontend)/(private)/components/LogoutButton'
-import Link from 'next/link'
 import { getUser } from '@/app/(frontend)/(private)/actions/getUser'
 import { Media } from '@/payload-types'
+
+import UserDropdownMenuContent from './UserDropdownMenuContent'
 
 export default async function Navbar() {
   const user = await getUser()
@@ -37,14 +29,7 @@ export default async function Navbar() {
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent sideOffset={10}>
-            <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="size-[1.2rem] mr-2" /> <Link href="/user-profile">Mi Perfil</Link>
-            </DropdownMenuItem>
-            <LogoutButton />
-          </DropdownMenuContent>
+          <UserDropdownMenuContent />
         </DropdownMenu>
       </div>
     </nav>

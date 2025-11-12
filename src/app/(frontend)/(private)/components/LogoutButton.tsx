@@ -1,12 +1,21 @@
 'use client'
+
 import { LogOut } from 'lucide-react'
 import { logout } from '../actions/logout'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { toast } from 'sonner'
+import FullScreenLoader from '@/components/FullScreenLoader'
+import type { Dispatch, SetStateAction } from 'react'
 
-export const LogoutButton = () => {
-  const [isLoading, setIsLoading] = useState(false)
+export const LogoutButton = ({
+  isLoading,
+  setIsLoading,
+}: {
+  isLoading: boolean
+  setIsLoading: Dispatch<SetStateAction<boolean>>
+}) => {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -17,19 +26,21 @@ export const LogoutButton = () => {
     const result = await logout()
 
     setIsLoading(false)
-    // if logout is successful, we can send the user back to the login page
+
     if (result.success) {
       router.push('/login')
     } else {
-      // otherwise, we should provide an error
-      setError(result.error || 'Logout failed')
+      setError(result.error || 'Error al cerrar sesión.')
     }
   }
 
-  // return a button that handles the logout login
+  useEffect(() => {
+    if (error) toast.error(error)
+  }, [error])
+
   return (
     <>
-      {error && <p className="text-red-400">{error}</p>}
+      <FullScreenLoader show={isLoading} />
       <DropdownMenuItem variant="destructive" onClick={handleLogout} disabled={isLoading}>
         <LogOut className="size-[1.2rem] mr-2" />
         {isLoading ? 'Logging out...' : 'Logout'}
@@ -37,9 +48,3 @@ export const LogoutButton = () => {
     </>
   )
 }
-/* 
-<div className="flex items-center justify-start gap-4">
-        <LogOut size={24} />
-        <p>Logout</p>
-      </div>
-*/

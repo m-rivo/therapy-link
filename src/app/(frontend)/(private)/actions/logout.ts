@@ -1,21 +1,16 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import type { AuthResponse } from '@/lib/types'
 
-interface LogoutResponse {
-  success: boolean
-  error?: string
-}
-
-export async function logout(): Promise<LogoutResponse> {
+export async function logout(): Promise<AuthResponse> {
   try {
     const cookieStore = await cookies()
-    // delete the payload-token from the session
     cookieStore.delete('payload-token')
 
     return { success: true }
   } catch (error) {
-    console.error('Logout error:', error)
-    return { success: false, error: 'An error occurred during logout' }
+    console.error('Error al cerrar sesión.', error)
+    return { success: false, error: 'Error al cerrar sesión.' }
   }
 }
