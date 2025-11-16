@@ -161,24 +161,22 @@ export default function ProfileContent({
                       <Input id="birthDate" defaultValue="" disabled={!isEditing} />
                     </div>
                   )}
+                  {isEditing && (
+                    <div className="flex justify-end items-end col-span-2">
+                      <SubmitButton loading={isSubmitting} text="Guardar" />
+                      <Button
+                        onClick={() => {
+                          reset()
+                          setIsEditing(false)
+                        }}
+                        variant="secondary"
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  )}
                 </FieldGroup>
               </FieldSet>
-              <div className="flex justify-end items-end">
-                {isEditing && (
-                  <>
-                    <SubmitButton loading={isSubmitting} text="Guardar" />
-                    <Button
-                      onClick={() => {
-                        reset()
-                        setIsEditing(false)
-                      }}
-                      variant="secondary"
-                    >
-                      Cancelar
-                    </Button>
-                  </>
-                )}
-              </div>
             </form>
           </CardContent>
         </Card>
