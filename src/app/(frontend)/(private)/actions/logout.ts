@@ -1,9 +1,9 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import type { AuthResponse } from '@/lib/types'
+import type { Response } from '@/lib/types'
 
-export async function logout(): Promise<AuthResponse> {
+export async function logout(): Promise<Response> {
   try {
     const cookieStore = await cookies()
     cookieStore.delete('payload-token')
