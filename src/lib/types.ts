@@ -23,7 +23,8 @@ export type TProfileSchema = z.infer<typeof profileSchema>
 
 export type TSignUpSchema = z.infer<typeof signUpSchema> */
 
-export interface AuthResponse {
+export interface Response {
   success: boolean
   error?: string
+  message?: string
 }
