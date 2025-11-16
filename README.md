@@ -4,7 +4,7 @@ No descripction yet...
 
 ## Technologías
 
-- [Payload CMS](https://payloadcms.com/){:target="\_blank"}
+- [Payload CMS](https://payloadcms.com/)
 - Next.js
 - React
 - Typescript
