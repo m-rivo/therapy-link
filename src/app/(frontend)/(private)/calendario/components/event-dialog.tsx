@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 //import { RiCalendarLine, RiDeleteBinLine } from '@remixicon/react'
 import { format, isBefore, parse, setHours, setMinutes, formatISO } from 'date-fns'
-
+import { useRouter } from 'next/navigation'
 import type { CalendarEvent, EventColor } from './'
 import { DefaultEndHour, DefaultStartHour, EndHour, StartHour } from '../constants'
 import { cn } from '@/lib/utils'
@@ -34,6 +34,7 @@ import { crearCita } from '../actions/crearCita'
 import { Response } from '@/lib/types'
 import { resetLoginAttempts } from 'payload'
 import { toast } from 'sonner'
+import { eliminarCita } from '../actions/eliminarCita'
 //import { Textarea } from '@/components/ui/textarea'
 
 interface EventDialogProps {
@@ -57,6 +58,8 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
   const [error, setError] = useState<string | null>(null)
   const [startDateOpen, setStartDateOpen] = useState(false)
   const [endDateOpen, setEndDateOpen] = useState(false)
+
+  const { refresh } = useRouter()
 
   // Debug log to check what event is being passed
   useEffect(() => {
@@ -133,7 +136,6 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
     }
 
     // Use generic title if empty
-    const eventTitle = title.trim() ? title : '(no title)'
 
     /* onSave({
       //TODO:
@@ -146,7 +148,6 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
       location,
       color,
     }) */
-    console.log({ fecha, hora })
 
     const horaString = hora
 
@@ -158,20 +159,28 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
 
     const finalISOString = formatISO(combinedDate)
 
-    console.log(finalISOString)
-
     const response: Response = await crearCita(finalISOString)
 
     if (response.success) {
       toast.success('Cita creada con éxito')
+      refresh()
+      onClose()
     } else {
       toast.error(response.error)
     }
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (event?.id) {
-      onDelete(event.id)
+      //TODO:
+      //onDelete(event.id)
+      const response = await eliminarCita(Number(event?.id))
+
+      if (response.success) {
+        toast.success(response.message)
+        refresh()
+        onClose()
+      } else toast.error(response.error)
     }
   }
 
@@ -224,7 +233,7 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{event?.id ? 'Edit Event' : 'Crear Cita'}</DialogTitle>
+          <DialogTitle>{event?.id ? 'Editar Cita' : 'Crear Cita'}</DialogTitle>
           <DialogDescription className="sr-only">
             {event?.id ? 'Edit the details of this event' : 'Add a new event to your calendar'}
           </DialogDescription>
@@ -264,7 +273,13 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
                     )}
                   >
                     <span className={cn('truncate', !fecha && 'text-muted-foreground')}>
-                      {fecha ? format(fecha, 'PPP') : 'Pick a date'}
+                      {fecha
+                        ? fecha.toLocaleDateString('es-US', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric',
+                          })
+                        : 'Pick a date'}
                     </span>
                     {/* <RiCalendarLine
                       size={16}
@@ -406,9 +421,9 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
         </div>
         <DialogFooter className="flex-row sm:justify-between">
           {event?.id && (
-            <Button variant="outline" size="icon" onClick={handleDelete} aria-label="Eliminar cita">
+            <Button variant="destructive" onClick={handleDelete} aria-label="Cancelar cita">
               {/* <RiDeleteBinLine size={16} aria-hidden="true" /> */}
-              <Trash2 className="text-destructive" size={16} />
+              <Trash2 size={16} /> Cancelar cita
             </Button>
           )}
           <div className="flex flex-1 justify-end gap-2">
