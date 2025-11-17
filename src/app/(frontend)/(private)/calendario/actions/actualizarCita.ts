@@ -40,13 +40,13 @@ export async function actualizarCita(id: number, fechaHora: string): Promise<Res
 
         console.log(cita)
 
-        return { success: true, message: 'Cita actualizada exitosamente' }
+        return { success: true, message: 'Cita reagendada con éxito' }
         //TODO: Notificación
         //TODO: Rol de psico?
       } catch (e) {
         console.error(e)
 
-        return { success: false, error: 'Ocurrió un problema al intentar actualizar cita' }
+        return { success: false, error: 'Ocurrió un problema al intentar reagendar cita' }
       }
     }
   } catch (e) {

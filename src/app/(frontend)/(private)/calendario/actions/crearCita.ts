@@ -36,10 +36,10 @@ export async function crearCita(fechaHora: string): Promise<Response> {
         })
 
         console.log(cita)
-        return { success: true, message: 'Cita creada con éxito' }
+        return { success: true, message: 'Cita agendada con éxito' }
       } catch (e) {
         console.error(e)
-        return { success: false, error: 'Hubo un problema al intentar crear cita' }
+        return { success: false, error: 'Hubo un problema al intentar agendar cita' }
       }
     } else {
       return { success: false, error: 'Ya existe una cita en esa fecha y hora' }

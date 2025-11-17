@@ -32,7 +32,7 @@ export async function eliminarCita(id: number): Promise<Response> {
     } else {
       try {
         await payload.delete({ collection: 'citas', where: { id: { equals: id } } })
-        return { success: true, message: 'Cita cancelada exitosamente' }
+        return { success: true, message: 'Cita cancelada con éxito' }
       } catch (e) {
         console.error(e)
         return { success: false, error: 'Ocurrió un problema al intentar cancelar cita' }
