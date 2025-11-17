@@ -213,7 +213,7 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{event?.id ? 'Reagendar cita' : 'Agenar cita'}</DialogTitle>
           <DialogDescription className={event?.id ? '' : 'sr-only'}>
@@ -221,8 +221,8 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4 py-4">
-            <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4 py-4">
+            <div className="min-w-56">
               <Controller
                 name="fecha"
                 control={control}
@@ -233,39 +233,43 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
                     value={field.value}
                     onChange={field.onChange}
                     label="Fecha"
-                    disabled={isLoading}
+                    disabled={isSubmitting || isLoading}
                     defaultDate={event?.start || new Date()}
                   />
                 )}
               />
               <FieldError errors={[{ message: errors.fecha?.message }]} />
-
-              {!allDay && (
-                <div className="min-w-28 *:not-first:mt-1.5">
-                  <Label htmlFor="start-time">Hora</Label>
-                  <Controller
-                    name="hora"
-                    control={control}
-                    //defaultValue={event?.id ? formatTimeForInput(event?.start) : undefined}
-                    render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger id="start-time">
-                          <SelectValue placeholder="Seleccione una hora" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {timeOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  <FieldError errors={[{ message: errors.hora?.message }]} />
-                </div>
-              )}
             </div>
+
+            {!allDay && (
+              <div className="min-w-28 *:not-first:mt-3">
+                <Label htmlFor="hora">Hora</Label>
+                <Controller
+                  name="hora"
+                  control={control}
+                  //defaultValue={event?.id ? formatTimeForInput(event?.start) : undefined}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isSubmitting || isLoading}
+                    >
+                      <SelectTrigger id="hora">
+                        <SelectValue placeholder="Seleccione una hora" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {timeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FieldError errors={[{ message: errors.hora?.message }]} />
+              </div>
+            )}
           </div>
           <DialogFooter className="flex-row sm:justify-between">
             {event?.id && (
@@ -283,7 +287,12 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
               />
             )}
             <div className="flex flex-1 justify-end gap-2">
-              <Button variant="outline" onClick={cancelar} type="button">
+              <Button
+                variant="outline"
+                onClick={cancelar}
+                type="button"
+                disabled={isSubmitting || isLoading}
+              >
                 Cancelar
               </Button>
               <SubmitButton loading={isSubmitting} text={event?.id ? 'Reagendar' : 'Agendar'} />
