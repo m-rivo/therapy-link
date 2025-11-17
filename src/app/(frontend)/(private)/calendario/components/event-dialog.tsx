@@ -35,6 +35,7 @@ import { Response } from '@/lib/types'
 import { resetLoginAttempts } from 'payload'
 import { toast } from 'sonner'
 import { eliminarCita } from '../actions/eliminarCita'
+import { actualizarCita } from '../actions/actualizarCita'
 //import { Textarea } from '@/components/ui/textarea'
 
 interface EventDialogProps {
@@ -159,10 +160,16 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
 
     const finalISOString = formatISO(combinedDate)
 
-    const response: Response = await crearCita(finalISOString)
+    let response: Response
+
+    if (event?.id) {
+      response = await actualizarCita(Number(event?.id), finalISOString)
+    } else {
+      response = await crearCita(finalISOString)
+    }
 
     if (response.success) {
-      toast.success('Cita creada con éxito')
+      toast.success(response.message)
       refresh()
       onClose()
     } else {

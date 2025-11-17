@@ -6,6 +6,7 @@ import { getUser } from '../../actions/getUser'
 import type { Response } from '@/lib/types'
 import type { Cita } from '@/payload-types'
 
+//FIXME: solo crear citas 24hrs o más de la hora actual
 export async function crearCita(fechaHora: string): Promise<Response> {
   const payload = await getPayload({ config })
 
@@ -35,7 +36,7 @@ export async function crearCita(fechaHora: string): Promise<Response> {
         })
 
         console.log(cita)
-        return { success: true }
+        return { success: true, message: 'Cita creada con éxito' }
       } catch (e) {
         console.error(e)
         return { success: false, error: 'Hubo un problema al intentar crear cita' }

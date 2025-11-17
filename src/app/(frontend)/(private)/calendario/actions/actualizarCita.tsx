@@ -5,7 +5,8 @@ import config from '@payload-config'
 import { getUser } from '../../actions/getUser'
 import type { Response } from '@/lib/types'
 
-export async function eliminarCita(id: number): Promise<Response> {
+//TODO: solo crear citas 24hrs o más de la hora actual
+export async function actualizarCita(id: number, fechaHora: string): Promise<Response> {
   const payload = await getPayload({ config })
 
   try {
@@ -24,18 +25,28 @@ export async function eliminarCita(id: number): Promise<Response> {
         },
       },
     })
-    //TODO: Notificación
-    //TODO: Rol de psico?
 
     if (find.totalDocs === 0) {
       return { success: false, error: 'No existe la cita creada por el usuario' }
     } else {
       try {
-        await payload.delete({ collection: 'citas', where: { id: { equals: id } } })
-        return { success: true, message: 'Cita cancelada exitosamente' }
+        const cita = await payload.update({
+          collection: 'citas',
+          id,
+          data: {
+            fechaHora,
+          },
+        })
+
+        console.log(cita)
+
+        return { success: true, message: 'Cita actualizada exitosamente' }
+        //TODO: Notificación
+        //TODO: Rol de psico?
       } catch (e) {
         console.error(e)
-        return { success: false, error: 'Ocurrió un problema al intentar cancelar cita' }
+
+        return { success: false, error: 'Ocurrió un problema al intentar actualizar cita' }
       }
     }
   } catch (e) {
