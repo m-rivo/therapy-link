@@ -21,9 +21,12 @@ export default function UserDropdownMenuContent() {
       <DropdownMenuContent sideOffset={10}>
         <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="size-[1.2rem] mr-2" /> <Link href="/user-profile">Mi Perfil</Link>
-        </DropdownMenuItem>
+        <Link href="/user-profile">
+          <DropdownMenuItem>
+            <User className="size-[1.2rem] mr-2" />
+            Mi Perfil
+          </DropdownMenuItem>
+        </Link>
         <LogoutButton isLoading={isLoading} setIsLoading={setIsLoading} />
       </DropdownMenuContent>
     </>
