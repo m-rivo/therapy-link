@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+//Perfil de usuario
 export const profileSchema = z.object({
   firstName: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
@@ -9,6 +10,14 @@ export const profileSchema = z.object({
 })
 
 export type TProfileSchema = z.infer<typeof profileSchema>
+
+//Cita
+export const citaSchema = z.object({
+  fecha: z.string().min(1, 'La fecha es obligatoria'),
+  hora: z.string().min(1, 'La hora es obligatoria'),
+})
+
+export type TCitaSchema = z.infer<typeof citaSchema>
 
 /* export const signUpSchema = z
   .object({

@@ -1,15 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-//import { RiCalendarLine, RiDeleteBinLine } from '@remixicon/react'
-import { format, isBefore, parse, setHours, setMinutes, formatISO } from 'date-fns'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { format, parse, setHours, setMinutes, formatISO } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import type { CalendarEvent, EventColor } from './'
 import { DefaultEndHour, DefaultStartHour, EndHour, StartHour } from '../constants'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-//import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
   DialogContent,
@@ -18,10 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-//import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Select,
   SelectContent,
@@ -29,14 +22,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Calendar1, Trash2 } from 'lucide-react'
+import { CalendarX } from 'lucide-react'
 import { crearCita } from '../actions/crearCita'
 import { Response } from '@/lib/types'
-import { resetLoginAttempts } from 'payload'
 import { toast } from 'sonner'
 import { eliminarCita } from '../actions/eliminarCita'
 import { actualizarCita } from '../actions/actualizarCita'
-//import { Textarea } from '@/components/ui/textarea'
+import SubmitButton from '@/components/CustomerForm/SubmitButton'
+import InputDatePicker from '@/components/InputDatePicker'
+import { Controller, useForm } from 'react-hook-form'
+import { citaSchema, TCitaSchema } from '@/lib/types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FieldError } from '@/components/ui/field'
+import { es } from 'date-fns/locale'
 
 interface EventDialogProps {
   event: CalendarEvent | null
@@ -47,55 +45,35 @@ interface EventDialogProps {
 }
 
 export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventDialogProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [fecha, setFecha] = useState<Date>(new Date())
-  //const [endDate, setEndDate] = useState<Date>(new Date())
-  const [hora, setHora] = useState(`${DefaultStartHour}:00`)
-  //const [endTime, setEndTime] = useState(`${DefaultEndHour}:00`)
   const [allDay, setAllDay] = useState(false)
-  const [location, setLocation] = useState('')
-  const [color, setColor] = useState<EventColor>('sky')
-  const [error, setError] = useState<string | null>(null)
-  const [startDateOpen, setStartDateOpen] = useState(false)
-  const [endDateOpen, setEndDateOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { refresh } = useRouter()
 
-  // Debug log to check what event is being passed
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TCitaSchema>({
+    resolver: zodResolver(citaSchema),
+  })
+
   useEffect(() => {
     console.log('EventDialog received event:', event)
-  }, [event])
-
-  useEffect(() => {
-    if (event) {
-      setTitle(event.title || '')
-      setDescription(event.description || '')
-
-      const start = new Date(event.start)
-      const end = new Date(event.end)
-
-      setFecha(start)
-      setHora(formatTimeForInput(start))
-      setAllDay(event.allDay || false)
-      setLocation(event.location || '')
-      setColor((event.color as EventColor) || 'sky')
-      setError(null) // Reset error when opening dialog
-    } else {
-      resetForm()
+    if (!event?.id) {
+      reset({
+        fecha: format(event?.start || new Date(), "dd 'de' MMMM 'de' yyyy", { locale: es }),
+        hora: undefined,
+      })
+      return
     }
-  }, [event])
 
-  const resetForm = () => {
-    setTitle('')
-    setDescription('')
-    setFecha(new Date())
-    setHora(`${DefaultStartHour}:00`)
-    setAllDay(false)
-    setLocation('')
-    setColor('sky')
-    setError(null)
-  }
+    reset({
+      fecha: format(event.start, "dd 'de' MMMM 'de' yyyy", { locale: es }),
+      hora: formatTimeForInput(event.start),
+    })
+  }, [event, reset])
 
   const formatTimeForInput = (date: Date) => {
     const hours = date.getHours().toString().padStart(2, '0')
@@ -120,9 +98,14 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
     return options
   }, []) // Empty dependency array ensures this only runs once
 
-  const handleSave = async () => {
-    const start = new Date(fecha)
+  const onSubmit = async (data: TCitaSchema) => {
+    setIsLoading(true)
 
+    const parsedDate = parse(data.fecha, "dd 'de' MMMM 'de' yyyy", new Date(), { locale: es })
+
+    /* 
+    const start = new Date(fecha)
+    
     if (!allDay) {
       const [startHours = 0, startMinutes = 0] = hora.split(':').map(Number)
 
@@ -134,27 +117,13 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
       start.setHours(startHours, startMinutes, 0)
     } else {
       start.setHours(0, 0, 0, 0)
-    }
+    } */
 
-    // Use generic title if empty
-
-    /* onSave({
-      //TODO:
-      id: event?.id || '',
-      title: eventTitle,
-      description,
-      start,
-      end,
-      allDay,
-      location,
-      color,
-    }) */
-
-    const horaString = hora
+    const horaString = data.hora
 
     const [horas, minutos] = horaString.split(':').map(Number)
 
-    let combinedDate = fecha
+    let combinedDate = parsedDate
     combinedDate = setHours(combinedDate, horas)
     combinedDate = setMinutes(combinedDate, minutos)
 
@@ -175,12 +144,12 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
     } else {
       toast.error(response.error)
     }
+    setIsLoading(false)
   }
 
   const handleDelete = async () => {
+    setIsLoading(true)
     if (event?.id) {
-      //TODO:
-      //onDelete(event.id)
       const response = await eliminarCita(Number(event?.id))
 
       if (response.success) {
@@ -189,6 +158,7 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
         onClose()
       } else toast.error(response.error)
     }
+    setIsLoading(false)
   }
 
   // Updated color options to match types.ts
@@ -236,210 +206,90 @@ export function EventDialog({ event, isOpen, onClose, onSave, onDelete }: EventD
     },
   ]
 
+  const cancelar = () => {
+    onClose()
+    reset()
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{event?.id ? 'Editar Cita' : 'Crear Cita'}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {event?.id ? 'Edit the details of this event' : 'Add a new event to your calendar'}
+          <DialogTitle>{event?.id ? 'Reagendar cita' : 'Agenar cita'}</DialogTitle>
+          <DialogDescription className={event?.id ? '' : 'sr-only'}>
+            {event?.id ? 'Cambia la fecha y hora de la cita' : 'Crea una nueva cita'}
           </DialogDescription>
         </DialogHeader>
-        {error && (
-          <div className="bg-destructive/15 text-destructive rounded-md px-3 py-2 text-sm">
-            {error}
-          </div>
-        )}
-        <div className="grid gap-4 py-4">
-          {/* <div className="*:not-first:mt-1.5">
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          </div> */}
-
-          {/* <div className="*:not-first:mt-1.5">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
-          </div> */}
-
-          <div className="flex gap-4">
-            <div className="flex-1 *:not-first:mt-1.5">
-              <Label htmlFor="start-date">Fecha</Label>
-              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="start-date"
-                    variant={'outline'}
-                    className={cn(
-                      'group bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]',
-                      !fecha && 'text-muted-foreground',
-                    )}
-                  >
-                    <span className={cn('truncate', !fecha && 'text-muted-foreground')}>
-                      {fecha
-                        ? fecha.toLocaleDateString('es-US', {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric',
-                          })
-                        : 'Pick a date'}
-                    </span>
-                    {/* <RiCalendarLine
-                      size={16}
-                      className="text-muted-foreground/80 shrink-0"
-                      aria-hidden="true"
-                    /> */}
-                    <Calendar1 />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={fecha}
-                    defaultMonth={fecha}
-                    onSelect={(date) => {
-                      if (date) {
-                        setFecha(date)
-                        setError(null)
-                        setStartDateOpen(false)
-                      }
-                    }}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <div className="flex gap-4">
+              <Controller
+                name="fecha"
+                control={control}
+                //defaultValue={formatDate(event?.start || new Date())}
+                render={({ field }) => (
+                  <InputDatePicker
+                    id="fecha"
+                    value={field.value}
+                    onChange={field.onChange}
+                    label="Fecha"
+                    disabled={isLoading}
+                    defaultDate={event?.start || new Date()}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
+                )}
+              />
+              <FieldError errors={[{ message: errors.fecha?.message }]} />
 
-            {!allDay && (
-              <div className="min-w-28 *:not-first:mt-1.5">
-                <Label htmlFor="start-time">Hora</Label>
-                <Select value={hora} onValueChange={setHora}>
-                  <SelectTrigger id="start-time">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          {/* <div className="flex gap-4">
-            <div className="flex-1 *:not-first:mt-1.5">
-              <Label htmlFor="end-date">End Date</Label>
-              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="end-date"
-                    variant={'outline'}
-                    className={cn(
-                      'group bg-background hover:bg-background border-input w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]',
-                      !endDate && 'text-muted-foreground',
+              {!allDay && (
+                <div className="min-w-28 *:not-first:mt-1.5">
+                  <Label htmlFor="start-time">Hora</Label>
+                  <Controller
+                    name="hora"
+                    control={control}
+                    //defaultValue={event?.id ? formatTimeForInput(event?.start) : undefined}
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger id="start-time">
+                          <SelectValue placeholder="Seleccione una hora" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timeOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     )}
-                  >
-                    <span className={cn('truncate', !endDate && 'text-muted-foreground')}>
-                      {endDate ? format(endDate, 'PPP') : 'Pick a date'}
-                    </span>
-                     <RiCalendarLine
-                      size={16}
-                      className="text-muted-foreground/80 shrink-0"
-                      aria-hidden="true"
-                    /> 
-                    <Calendar1 />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-2" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    defaultMonth={endDate}
-                    disabled={{ before: startDate }}
-                    onSelect={(date) => {
-                      if (date) {
-                        setEndDate(date)
-                        setError(null)
-                        setEndDateOpen(false)
-                      }
-                    }}
                   />
-                </PopoverContent>
-              </Popover>
+                  <FieldError errors={[{ message: errors.hora?.message }]} />
+                </div>
+              )}
             </div>
-
-            {!allDay && (
-              <div className="min-w-28 *:not-first:mt-1.5">
-                <Label htmlFor="end-time">End Time</Label>
-                <Select value={endTime} onValueChange={setEndTime}>
-                  <SelectTrigger id="end-time">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div> */}
-
-          {/* <div className="flex items-center gap-2">
-            <Checkbox
-              id="all-day"
-              checked={allDay}
-              onCheckedChange={(checked) => setAllDay(checked === true)}
-            />
-            <Label htmlFor="all-day">All day</Label>
-          </div> */}
-
-          {/* <div className="*:not-first:mt-1.5">
-            <Label htmlFor="location">Location</Label>
-            <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} />
-          </div> */}
-          {/* <fieldset className="space-y-4">
-            <legend className="text-foreground text-sm leading-none font-medium">Etiquette</legend>
-            <RadioGroup
-              className="flex gap-1.5"
-              defaultValue={colorOptions[0]?.value}
-              value={color}
-              onValueChange={(value: EventColor) => setColor(value)}
-            >
-              {colorOptions.map((colorOption) => (
-                <RadioGroupItem
-                  key={colorOption.value}
-                  id={`color-${colorOption.value}`}
-                  value={colorOption.value}
-                  aria-label={colorOption.label}
-                  className={cn('size-6 shadow-none', colorOption.bgClass, colorOption.borderClass)}
-                />
-              ))}
-            </RadioGroup>
-          </fieldset> */}
-        </div>
-        <DialogFooter className="flex-row sm:justify-between">
-          {event?.id && (
-            <Button variant="destructive" onClick={handleDelete} aria-label="Cancelar cita">
-              {/* <RiDeleteBinLine size={16} aria-hidden="true" /> */}
-              <Trash2 size={16} /> Cancelar cita
-            </Button>
-          )}
-          <div className="flex flex-1 justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave}>Guardar</Button>
           </div>
-        </DialogFooter>
+          <DialogFooter className="flex-row sm:justify-between">
+            {event?.id && (
+              <SubmitButton
+                loading={isLoading}
+                text={
+                  <>
+                    <CalendarX /> Cancelar cita
+                  </>
+                }
+                type="button"
+                variant="destructive"
+                ariaLabel="cancelar cita"
+                onClick={handleDelete}
+              />
+            )}
+            <div className="flex flex-1 justify-end gap-2">
+              <Button variant="outline" onClick={cancelar} type="button">
+                Cancelar
+              </Button>
+              <SubmitButton loading={isSubmitting} text={event?.id ? 'Reagendar' : 'Agendar'} />
+            </div>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )
