@@ -1,22 +1,22 @@
 # Therapy Link 🧠
 
-No descripction yet...
+Esta aplicación está actualmente en desarrollo
 
 ## Technologías
 
 - [Payload CMS](https://payloadcms.com/)
-- Next.js
-- React
-- Typescript
-- Tailwind
-- Shadcn
-- PostgreSQL
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Shadcn UI](https://ui.shadcn.com/)
+- [PostgreSQL](https://www.postgresql.org/)
 
-## Titulo
+## Funcionalidades
 
 - Login y logout de usuarios
 - Registro de usuarios (link de verificación enviado a correo)
 - Edición de datos de usuario
 - Cambio de contraseña (link enviado a correo)
 - Olvidó contraseña verificación (link enviado a correo)
-- Creación de citas
+- Gestión de citas (creación, reprogramación, cancelación)
