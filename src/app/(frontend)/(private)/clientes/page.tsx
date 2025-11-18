@@ -1,11 +1,14 @@
-import { SearchIcon } from "lucide-react";
+import { SearchIcon } from 'lucide-react'
 
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
-import { Input } from "@/components/ui/input";
-import ClientsTable from "@/components/ClientsTable";
+import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Input } from '@/components/ui/input'
+import ClientsTable from './components/ClientsTable'
+import { obtenerClientes } from './actions/obtenerClientes'
 
-export default function Clientes() {
+export default async function Clientes() {
+  const response = await obtenerClientes()
+
   return (
     <>
       <ButtonGroup>
@@ -14,7 +17,7 @@ export default function Clientes() {
           <SearchIcon />
         </Button>
       </ButtonGroup>
-      <ClientsTable />
+      <ClientsTable data={response.data || []} />
     </>
-  );
+  )
 }
