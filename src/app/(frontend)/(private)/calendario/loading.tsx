@@ -1,34 +1,25 @@
 import { Skeleton } from '@/components/ui/skeleton'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
-//TODO: Cambiar skeletons
 export default function Loading() {
   return (
-    <div className="mx-auto max-w-4xl space-y-6 px-4 py-10">
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="flex items-center space-x-4 flex-wrap">
-            <Skeleton className="h-24 w-24 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-[200px]" />
-              <Skeleton className="h-4 w-[250px]" />
-            </div>
-          </CardHeader>
-        </Card>
+    <div className="mx-auto w-full space-y-6 px-4 py-10 h-screen flex flex-col">
+      <div className="flex w-full justify-between">
+        <div className="space-x-2 flex flex-row">
+          <Skeleton className="h-9 w-[100px]" />
+          <Skeleton className="h-9 w-9" />
+          <Skeleton className="h-9 w-9" />
+          <Skeleton className="h-9 w-[200px]" />
+        </div>
+        <div className="space-x-2 flex flex-row">
+          <Skeleton className="h-9 w-[100px]" />
+          <Skeleton className="h-9 w-[100px]" />
+        </div>
       </div>
 
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <Skeleton className="h-6 w-1/4" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 grid-cols-7 grid-rows-3 flex-1">
+        {[...Array(21)].map((_, i) => (
+          <Skeleton key={i} className="h-full w-full" />
+        ))}
       </div>
     </div>
   )
