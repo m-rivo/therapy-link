@@ -11,6 +11,8 @@ Esta aplicación está actualmente en desarrollo
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Shadcn UI](https://ui.shadcn.com/)
 - [PostgreSQL](https://www.postgresql.org/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Zod](https://zod.dev/)
 
 ## Funcionalidades
 
