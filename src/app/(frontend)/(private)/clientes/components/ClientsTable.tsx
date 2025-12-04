@@ -22,7 +22,6 @@ import {
   ChevronsLeft,
   User,
   Check,
-  SquareCheckBig,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -50,6 +49,8 @@ import {
 } from '@/components/ui/select'
 import type { Customer, Media } from '@/payload-types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useEffect, useState } from 'react'
+import { obtenerClientes } from '../actions/obtenerClientes'
 
 export const columns: ColumnDef<Customer>[] = [
   {
@@ -109,15 +110,24 @@ export const columns: ColumnDef<Customer>[] = [
   },
 ]
 
-export default function ClientsTable({ data }: { data: Customer[] | [] }) {
+export default function ClientsTable() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = useState<Customer[]>([])
+  const [pageCount, setPageCount] = useState(1)
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const table = useReactTable({
     data,
     columns,
+    pageCount,
+    manualPagination: true,
+    onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -131,8 +141,26 @@ export default function ClientsTable({ data }: { data: Customer[] | [] }) {
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   })
+
+  const pageIndex = pagination.pageIndex
+  const pageSize = pagination.pageSize
+
+  useEffect(() => {
+    async function load() {
+      const page = pageIndex + 1
+      const limit = pageSize
+
+      const resp = await obtenerClientes(page, limit)
+
+      setData(resp.data || [])
+      setPageCount(resp.totalPages || 1)
+    }
+
+    load()
+  }, [pageIndex, pageSize])
 
   return (
     <div className="w-full">
@@ -211,13 +239,13 @@ export default function ClientsTable({ data }: { data: Customer[] | [] }) {
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Filas por página</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${pageSize}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value))
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
               {[10, 20, 25, 30, 40, 50].map((pageSize) => (
@@ -229,7 +257,7 @@ export default function ClientsTable({ data }: { data: Customer[] | [] }) {
           </Select>
         </div>
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+          Página {pageIndex + 1} de {pageCount}
         </div>
         {/*  */}
         <div className="space-x-2">

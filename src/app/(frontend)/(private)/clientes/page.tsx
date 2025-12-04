@@ -4,11 +4,9 @@ import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Input } from '@/components/ui/input'
 import ClientsTable from './components/ClientsTable'
-import { obtenerClientes } from './actions/obtenerClientes'
 
+//TODO: agregar actions para ver, enviar mensaje whatsapp, etc
 export default async function Clientes() {
-  const response = await obtenerClientes()
-
   return (
     <>
       <ButtonGroup>
@@ -17,7 +15,7 @@ export default async function Clientes() {
           <SearchIcon />
         </Button>
       </ButtonGroup>
-      <ClientsTable data={response.data || []} />
+      <ClientsTable />
     </>
   )
 }
