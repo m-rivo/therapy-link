@@ -51,6 +51,8 @@ import type { Customer, Media } from '@/payload-types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useEffect, useState } from 'react'
 import { obtenerClientes } from '../actions/obtenerClientes'
+import { Skeleton } from '@/components/ui/skeleton'
+import { SearchIcon } from 'lucide-react'
 
 export const columns: ColumnDef<Customer>[] = [
   {
@@ -121,6 +123,9 @@ export default function ClientsTable() {
     pageIndex: 0,
     pageSize: 10,
   })
+  const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const table = useReactTable({
     data,
@@ -150,27 +155,44 @@ export default function ClientsTable() {
 
   useEffect(() => {
     async function load() {
+      setLoading(true)
       const page = pageIndex + 1
       const limit = pageSize
 
-      const resp = await obtenerClientes(page, limit)
+      const resp = await obtenerClientes(page, limit, debouncedSearch)
 
       setData(resp.data || [])
       setPageCount(resp.totalPages || 1)
+      setLoading(false)
     }
 
     load()
-  }, [pageIndex, pageSize])
+  }, [pageIndex, pageSize, debouncedSearch])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [search])
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Buscar por correo..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) => table.getColumn('email')?.setFilterValue(event.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center py-4 space-x-2">
+        <div className="relative w-sm">
+          <SearchIcon className="text-muted-foreground absolute top-3 left-3 h-5 w-5" />
+          <Input
+            placeholder="Buscar por nombre o correo"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value)
+              table.setPageIndex(0) // resetea la paginación al buscar
+            }}
+            className="border-border bg-card h-12 pl-10"
+            required
+          />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -214,7 +236,17 @@ export default function ClientsTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <TableRow key={i}>
+                  {columns.map((col, index) => (
+                    <TableCell key={index}>
+                      <Skeleton className="h-5 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (

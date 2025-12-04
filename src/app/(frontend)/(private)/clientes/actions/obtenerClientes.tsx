@@ -13,7 +13,11 @@ type FetchClientesResponse = Response & {
 }
 
 //TODO: solo para rol psico
-export async function obtenerClientes(page: number, limit: number): Promise<FetchClientesResponse> {
+export async function obtenerClientes(
+  page: number,
+  limit: number,
+  search?: string,
+): Promise<FetchClientesResponse> {
   const payload = await getPayload({ config })
 
   try {
@@ -21,10 +25,33 @@ export async function obtenerClientes(page: number, limit: number): Promise<Fetc
 
     if (!user) return { success: false, error: 'No hay un usuario autenticado' }
 
+    const where: any = {}
+
+    if (search) {
+      where.or = [
+        {
+          firstName: {
+            contains: search,
+          },
+        },
+        {
+          lastName: {
+            contains: search,
+          },
+        },
+        {
+          email: {
+            contains: search,
+          },
+        },
+      ]
+    }
+
     const find = await payload.find({
       collection: 'customers',
       page,
       limit,
+      where,
     })
 
     if (find.totalDocs === 0) {
